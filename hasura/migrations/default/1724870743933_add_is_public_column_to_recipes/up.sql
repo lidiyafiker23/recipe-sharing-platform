@@ -52,7 +52,8 @@ CREATE TABLE public.recipes (
     category_id uuid,
     user_id uuid,
     created_at timestamp without time zone DEFAULT now(),
-    updated_at timestamp without time zone DEFAULT now()
+    updated_at timestamp without time zone DEFAULT now(),
+    is_public boolean DEFAULT false
 );
 CREATE TABLE public.steps (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -67,7 +68,8 @@ CREATE TABLE public.users (
     email character varying(100) NOT NULL,
     password character varying(255) NOT NULL,
     created_at timestamp without time zone DEFAULT now(),
-    updated_at timestamp without time zone DEFAULT now()
+    updated_at timestamp without time zone DEFAULT now(),
+    role character varying(50) DEFAULT 'user'::character varying
 );
 ALTER TABLE ONLY public.bookmarks
     ADD CONSTRAINT bookmarks_pkey PRIMARY KEY (user_id, recipe_id);
@@ -97,6 +99,24 @@ ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_username_key UNIQUE (username);
+CREATE INDEX idx_bookmarks_recipe_id ON public.bookmarks USING btree (recipe_id);
+CREATE INDEX idx_bookmarks_user_id ON public.bookmarks USING btree (user_id);
+CREATE INDEX idx_comments_recipe_id ON public.comments USING btree (recipe_id);
+CREATE INDEX idx_comments_user_id ON public.comments USING btree (user_id);
+CREATE INDEX idx_ingredients_name ON public.ingredients USING btree (name);
+CREATE INDEX idx_likes_recipe_id ON public.likes USING btree (recipe_id);
+CREATE INDEX idx_likes_user_id ON public.likes USING btree (user_id);
+CREATE INDEX idx_ratings_recipe_id ON public.ratings USING btree (recipe_id);
+CREATE INDEX idx_ratings_user_id ON public.ratings USING btree (user_id);
+CREATE INDEX idx_recipe_images_is_featured ON public.recipe_images USING btree (is_featured);
+CREATE INDEX idx_recipe_images_recipe_id ON public.recipe_images USING btree (recipe_id);
+CREATE INDEX idx_recipe_ingredients_ingredient_id ON public.recipe_ingredients USING btree (ingredient_id);
+CREATE INDEX idx_recipe_ingredients_recipe_id ON public.recipe_ingredients USING btree (recipe_id);
+CREATE INDEX idx_recipes_category_id ON public.recipes USING btree (category_id);
+CREATE INDEX idx_recipes_user_id ON public.recipes USING btree (user_id);
+CREATE INDEX idx_steps_recipe_id ON public.steps USING btree (recipe_id);
+CREATE INDEX idx_users_email ON public.users USING btree (email);
+CREATE INDEX idx_users_username ON public.users USING btree (username);
 ALTER TABLE ONLY public.bookmarks
     ADD CONSTRAINT bookmarks_recipe_id_fkey FOREIGN KEY (recipe_id) REFERENCES public.recipes(id);
 ALTER TABLE ONLY public.bookmarks

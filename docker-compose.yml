@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: passw0rd
+      POSTGRES_USER: foodrecipeuser
+      POSTGRES_DB: foodrecipedb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5333:5432"
+  hasura:
+    image: hasura/graphql-engine:v2.0.10
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://foodrecipeuser:passw0rd@postgres:5432/foodrecipedb
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_ADMIN_SECRET: "jlknyvjkydiufotosnwmpiytomjidutnwdmyh"
+      HASURA_GRAPHQL_JWT_SECRET: '{"type": "HS256", "key": "fgvhrbtgnhulmkngbiftvdifbinyulnasctimwjiotcwpsxercrhdertyuidcghsknbghxnykchxfgfggfd"}'
+volumes:
+  postgres_data:
